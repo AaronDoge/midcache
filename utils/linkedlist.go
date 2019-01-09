@@ -7,8 +7,8 @@ import (
 
 type Node struct {
 	// TODO 后面支持更多数据结构
-	data map[string]string
-	next *Node
+	Data map[string]string
+	Next *Node
 }
 
 type LinkedList struct {
@@ -33,11 +33,11 @@ func (list *LinkedList) append(node *Node) error {
 		return errors.New("empty node")
 	}
 
-	node.next = nil
+	node.Next = nil
 	if list.Size == 0 {
 		list.Head = node
 	} else {
-		list.Tail.next = node
+		list.Tail.Next = node
 	}
 	list.Size++
 	list.Tail = node
@@ -50,7 +50,11 @@ func (list *LinkedList) prefix(node *Node) error {
 		return errors.New("empty node")
 	}
 
-	node.next = list.Head
+	if list.Size == 0 {
+		list.Tail = node
+	}
+
+	node.Next = list.Head
 	list.Head = node
 	list.Size++
 
@@ -72,8 +76,8 @@ func (list *LinkedList) setFront(preNode, node *Node) error {
 		return nil
 	}
 
-	preNode.next = node.next
-	node.next = list.Head
+	preNode.Next = node.Next
+	node.Next = list.Head
 	list.Head = node
 
 	return nil
@@ -86,13 +90,13 @@ func (list *LinkedList) SetFront(key string) error {
 	}
 
 	preNode := list.Head
-	curNode := list.Head.next
+	curNode := list.Head.Next
 	for i := 1; i < n; i++ {
-		if _, ok := curNode.data[key]; ok {
+		if _, ok := curNode.Data[key]; ok {
 			continue
 		}
 		preNode = curNode
-		curNode = curNode.next
+		curNode = curNode.Next
 	}
 
 	err := list.setFront(preNode, curNode)
@@ -105,8 +109,8 @@ func (list *LinkedList) SetFront(key string) error {
 
 func (list *LinkedList) SetTail(key, val string) error {
 	node := &Node{
-		data: map[string]string{key: val},
-		next: nil,
+		Data: map[string]string{key: val},
+		Next: nil,
 	}
 
 	err := list.append(node)
@@ -119,7 +123,7 @@ func (list *LinkedList) SetTail(key, val string) error {
 
 func (list *LinkedList) SetHead(key, val string) error {
 	node := &Node{
-		data: map[string]string{key: val},
+		Data: map[string]string{key: val},
 	}
 
 	if err := list.prefix(node); err != nil {
@@ -137,10 +141,10 @@ func (list *LinkedList) Get(key string) (string, error) {
 
 	curNode := list.Head
 	for i := 0; i < n; i++ {
-		if val, ok := curNode.data[key]; ok {
+		if val, ok := curNode.Data[key]; ok {
 			return val, nil
 		}
-		curNode = curNode.next
+		curNode = curNode.Next
 	}
 
 	info := fmt.Sprintf("not found %s", key)
@@ -155,29 +159,29 @@ func (list *LinkedList) Del(key string) error {
 	}
 
 	// 判断head是否是目标
-	if _, ok := list.Head.data[key]; ok {
+	if _, ok := list.Head.Data[key]; ok {
 		//tmp := list.head.next
 		//list.head.next = nil
 		//list.head = tmp
 
 		// TODO 这种写法有待确认
-		list.Head, list.Head.next = list.Head.next, nil
+		list.Head, list.Head.Next = list.Head.Next, nil
 		list.Size--
 
 		return nil
 	}
 
 	preNode := list.Head
-	curNode := list.Head.next
+	curNode := list.Head.Next
 	for i := 1; i < n; i++ {
-		if key != curNode.data[key] {
+		if key != curNode.Data[key] {
 			preNode = curNode
-			curNode = curNode.next
+			curNode = curNode.Next
 			continue
 		}
 
-		preNode.next = curNode.next
-		curNode.next = nil
+		preNode.Next = curNode.Next
+		curNode.Next = nil
 		list.Size--
 	}
 
@@ -190,7 +194,7 @@ func (list *LinkedList) DelHead() error {
 		return errors.New("linked list is empty")
 	}
 
-	list.Head, list.Head.next = list.Head.next, nil
+	list.Head, list.Head.Next = list.Head.Next, nil
 	list.Size--
 	return nil
 }
@@ -207,14 +211,14 @@ func (list *LinkedList) DelTail() error {
 	}
 
 	preNode := list.Head
-	curNode := list.Head.next
+	curNode := list.Head.Next
 	for i := 1; i < n; i++ {
 		preNode = curNode
-		curNode = curNode.next
+		curNode = curNode.Next
 	}
 
 	list.Tail = preNode
-	preNode.next = nil
+	preNode.Next = nil
 	list.Size--
 
 	return nil
