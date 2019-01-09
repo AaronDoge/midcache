@@ -19,8 +19,8 @@ func TestNewList(t *testing.T) {
 	l.append(node1)
 	l.append(node2)
 
-	val, _ := l.get("nihao")
-	val2, _ := l.get("hello")
+	val, _ := l.Get("nihao")
+	val2, _ := l.Get("hello")
 
 	fmt.Println("nihao: ", val)
 	fmt.Println("hello: ", val2)
