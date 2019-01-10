@@ -6,14 +6,14 @@ import (
 )
 
 type LRU struct {
-	list 	*utils.LinkedList
+	List    *utils.LinkedList
 	maxSize int
 }
 
 func NewLRU(size int) *LRU {
 	li := utils.NewList()
 	lru := &LRU{
-		list:	li,
+		List:    li,
 		maxSize: size,
 	}
 
@@ -22,13 +22,13 @@ func NewLRU(size int) *LRU {
 
 func (lru *LRU) Set(key, val string) error {
 	// 先写再删
-	err := lru.list.SetHead(key, val)
+	err := lru.List.SetHead(key, val)
 	if err != nil {
 		return err
 	}
 
-	if lru.list.Size > lru.maxSize {
-		err  := lru.list.DelTail()
+	if lru.List.Size > lru.maxSize {
+		err := lru.List.DelTail()
 		if err != nil {
 			return err
 		}
@@ -36,20 +36,35 @@ func (lru *LRU) Set(key, val string) error {
 	return nil
 }
 
-func (lru *LRU) Get(key string) string {
-	val, err := lru.list.Get(key)
-	if err != nil {
-		fmt.Println("get val error. key:", key, "error: ", err.Error())
-		return ""
+func (lru *LRU) SetNoRe(key, val string) error {
+	if lru.List.Size != 0 {
+		_, node, err := lru.List.GetNode(key)
+		if err == nil && node != nil {
+			node.Data[key] = val
+			return nil
+		}
 	}
 
-	err = lru.list.SetFront(key)
+	err := lru.Set(key, val)
 	if err != nil {
-		fmt.Println("get val error. key:", key, "error: ", err.Error())
-		return ""
+		return err
 	}
-
-	return val
+	return nil
 }
 
+func (lru *LRU) Get(key string) string {
+	pre, node, err := lru.List.GetNode(key)
+	if err != nil {
+		fmt.Println("get val error. key:", key, "error: ", err.Error())
+		return ""
+	}
 
+	err = lru.List.SetFrontNode(pre, node)
+	//err = lru.List.SetFront(key)
+	if err != nil {
+		fmt.Println("set front error. key:", key, "error: ", err.Error())
+		return ""
+	}
+
+	return node.Data[key]
+}

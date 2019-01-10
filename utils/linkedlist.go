@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-type Node struct {
-	// TODO 后面支持更多数据结构
-	Data map[string]string
-	Next *Node
-}
-
 type LinkedList struct {
 	Head *Node
 	Tail *Node
@@ -75,7 +69,11 @@ func (list *LinkedList) setFront(preNode, node *Node) error {
 	if list.Head == node {
 		return nil
 	}
+	if list.Tail == node {
+		list.Tail = preNode
+	}
 
+	//fmt.Println(">>>check next", preNode, node)
 	preNode.Next = node.Next
 	node.Next = list.Head
 	list.Head = node
@@ -91,20 +89,37 @@ func (list *LinkedList) SetFront(key string) error {
 
 	preNode := list.Head
 	curNode := list.Head.Next
-	for i := 1; i < n; i++ {
+	if _, ok := preNode.Data[key]; ok {
+		return nil
+	}
+	for i := 1; i < n + 1; i++ {
 		if _, ok := curNode.Data[key]; ok {
-			continue
+			err := list.setFront(preNode, curNode)
+			if err != nil {
+				return err
+			} else {
+				return nil
+			}
 		}
 		preNode = curNode
 		curNode = curNode.Next
 	}
 
-	err := list.setFront(preNode, curNode)
-	if err != nil {
-		return err
+	return errors.New(fmt.Sprintf("not found %s", key))
+}
+
+func (list *LinkedList) SetFrontNode(pre, node *Node) error {
+	n := list.Size
+	if n == 1 {
+		return nil
 	}
 
-	return nil
+	err := list.setFront(pre, node)
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }
 
 func (list *LinkedList) SetTail(key, val string) error {
@@ -140,17 +155,50 @@ func (list *LinkedList) Get(key string) (string, error) {
 	}
 
 	curNode := list.Head
-	for i := 0; i < n; i++ {
+	for i := 0; i < n + 1; i++ {
 		if val, ok := curNode.Data[key]; ok {
+			//fmt.Println(">>>hit:", curNode)
 			return val, nil
 		}
 		curNode = curNode.Next
 	}
 
+	//fmt.Println(">>>check 299:", curNode)
+
 	info := fmt.Sprintf("not found %s", key)
 	return "", errors.New(info)
 }
 
+func (list *LinkedList) GetNode(key string) (*Node, *Node, error) {
+	n := list.Size
+	if n == 0 {
+		return nil, nil, errors.New("linked list is empty")
+	} else if n == 1 {
+		//fmt.Println(">>>check get node", key, n)
+		if _, ok := list.Head.Data[key]; ok {
+			return nil, list.Head, nil
+		} else {
+			return nil, nil, errors.New(fmt.Sprintf("not found %s", key))
+		}
+	}
+
+	preNode := list.Head
+	if _, ok := preNode.Data[key]; ok {
+		return preNode, list.Head, nil
+	}
+	curNode := list.Head.Next
+	for i := 2; i < n + 1; i++ {
+ 		if _, ok := curNode.Data[key]; ok {
+			//fmt.Println(">>>hit:", preNode, curNode)
+			return preNode, curNode, nil
+		}
+		preNode = curNode
+		curNode = curNode.Next
+	}
+
+	info := fmt.Sprintf("not found %s", key)
+	return nil, nil, errors.New(info)
+}
 
 func (list *LinkedList) Del(key string) error {
 	n := list.Size
@@ -223,5 +271,3 @@ func (list *LinkedList) DelTail() error {
 
 	return nil
 }
-
-
