@@ -6,14 +6,14 @@ import (
 )
 
 type LRU struct {
-	list 	*utils.LinkedList
+	list    *utils.LinkedList
 	maxSize int
 }
 
 func NewLRU(size int) *LRU {
 	li := utils.NewList()
 	lru := &LRU{
-		list:	li,
+		list:    li,
 		maxSize: size,
 	}
 
@@ -28,7 +28,7 @@ func (lru *LRU) Set(key, val string) error {
 	}
 
 	if lru.list.Size > lru.maxSize {
-		err  := lru.list.DelTail()
+		err := lru.list.DelTail()
 		if err != nil {
 			return err
 		}
@@ -51,5 +51,3 @@ func (lru *LRU) Get(key string) string {
 
 	return val
 }
-
-
