@@ -42,7 +42,8 @@ func main()  {
 	startTime := time.Now()
 	for i := 0; i < TEST_TIMES; i++ {
 		getKey := fmt.Sprintf("No.%d", i % 200)
-		fmt.Println("获取结果：", cache.Get(getKey))
+		cache.Get(getKey)
+		//fmt.Println("获取结果：", cache.Get(getKey))
 	}
 	endTime := time.Now()
 

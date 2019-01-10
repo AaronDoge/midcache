@@ -38,8 +38,6 @@ func (lru *LRU) Set(key, val string) error {
 
 func (lru *LRU) SetNoRe(key, val string) error {
 	if lru.List.Size != 0 {
-		// 查重
-		// fmt.Println(">>>check set no repeat", key, val)
 		_, node, err := lru.List.GetNode(key)
 		if err == nil && node != nil {
 			node.Data[key] = val
@@ -61,8 +59,6 @@ func (lru *LRU) Get(key string) string {
 		return ""
 	}
 
-	//fmt.Println(">>>check lru Get", pre, pre.Next, node)
-	// TODO List.Get()中一次遍历，这里一次遍历，有点浪费，可以直接利用Get中返回的结果；这需要List.Get返回一个*Node类型了
 	err = lru.List.SetFrontNode(pre, node)
 	//err = lru.List.SetFront(key)
 	if err != nil {

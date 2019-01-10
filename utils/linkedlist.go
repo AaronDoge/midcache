@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-type Node struct {
-	// TODO 后面支持更多数据结构
-	Data map[string]string
-	Next *Node
-}
-
 type LinkedList struct {
 	Head *Node
 	Tail *Node
@@ -169,7 +163,7 @@ func (list *LinkedList) Get(key string) (string, error) {
 		curNode = curNode.Next
 	}
 
-	fmt.Println(">>>check 299:", curNode)
+	//fmt.Println(">>>check 299:", curNode)
 
 	info := fmt.Sprintf("not found %s", key)
 	return "", errors.New(info)
