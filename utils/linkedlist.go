@@ -114,6 +114,20 @@ func (list *LinkedList) SetFront(key string) error {
 	return errors.New(fmt.Sprintf("not found %s", key))
 }
 
+func (list *LinkedList) SetFrontNode(pre, node *Node) error {
+	n := list.Size
+	if n == 1 {
+		return nil
+	}
+
+	err := list.setFront(pre, node)
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
 func (list *LinkedList) SetTail(key, val string) error {
 	node := &Node{
 		Data: map[string]string{key: val},
@@ -159,6 +173,37 @@ func (list *LinkedList) Get(key string) (string, error) {
 
 	info := fmt.Sprintf("not found %s", key)
 	return "", errors.New(info)
+}
+
+func (list *LinkedList) GetNode(key string) (*Node, *Node, error) {
+	n := list.Size
+	if n == 0 {
+		return nil, nil, errors.New("linked list is empty")
+	} else if n == 1 {
+		//fmt.Println(">>>check get node", key, n)
+		if _, ok := list.Head.Data[key]; ok {
+			return nil, list.Head, nil
+		} else {
+			return nil, nil, errors.New(fmt.Sprintf("not found %s", key))
+		}
+	}
+
+	preNode := list.Head
+	if _, ok := preNode.Data[key]; ok {
+		return preNode, list.Head, nil
+	}
+	curNode := list.Head.Next
+	for i := 2; i < n + 1; i++ {
+ 		if _, ok := curNode.Data[key]; ok {
+			//fmt.Println(">>>hit:", preNode, curNode)
+			return preNode, curNode, nil
+		}
+		preNode = curNode
+		curNode = curNode.Next
+	}
+
+	info := fmt.Sprintf("not found %s", key)
+	return nil, nil, errors.New(info)
 }
 
 func (list *LinkedList) Del(key string) error {

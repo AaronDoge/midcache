@@ -6,17 +6,25 @@ import (
 	"time"
 )
 
-const TEST_TIMES = 100000
+const TEST_TIMES = 1000000
 
 func main()  {
 
 	cache := midcache.NewLRU(200)
-
-	for i := 0; i < 200; i++ {
-		key := fmt.Sprintf("No.%d", i)
+	startSet := time.Now()
+	for i := 0; i < TEST_TIMES; i++ {
+		key := fmt.Sprintf("No.%d", i % 200)
 		val := fmt.Sprintf("values of %s", key)
-		cache.Set(key, val)
+		//fmt.Println(">>>check key", key, "val", val)
+		err := cache.SetNoRe(key, val)
+		if err != nil {
+			fmt.Println("set error", err.Error(), ", location", key)
+		}
 	}
+	endSet := time.Now()
+	//fmt.Println("Set 总用时：", endSet.Sub(startSet))
+	//
+	//fmt.Println("Head", cache.List.Head, "tail", cache.List.Tail)
 
 	//fmt.Println("Size:", cache.List.Size)
 	//fmt.Println("head", cache.List.Head, "tail", cache.List.Tail)
@@ -38,7 +46,8 @@ func main()  {
 	}
 	endTime := time.Now()
 
-	fmt.Println("总用时：", endTime.Sub(startTime))
+	fmt.Println("set总用时：", endSet.Sub(startSet))
+	fmt.Println("get总用时：", endTime.Sub(startTime))
 	// 100w 	11s
 	// 10w 		1.15s
 }
