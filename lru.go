@@ -6,14 +6,14 @@ import (
 )
 
 type LRU struct {
-	list    *utils.LinkedList
+	List    *utils.LinkedList
 	maxSize int
 }
 
 func NewLRU(size int) *LRU {
 	li := utils.NewList()
 	lru := &LRU{
-		list:    li,
+		List:    li,
 		maxSize: size,
 	}
 
@@ -22,13 +22,13 @@ func NewLRU(size int) *LRU {
 
 func (lru *LRU) Set(key, val string) error {
 	// 先写再删
-	err := lru.list.SetHead(key, val)
+	err := lru.List.SetHead(key, val)
 	if err != nil {
 		return err
 	}
 
-	if lru.list.Size > lru.maxSize {
-		err := lru.list.DelTail()
+	if lru.List.Size > lru.maxSize {
+		err := lru.List.DelTail()
 		if err != nil {
 			return err
 		}
@@ -37,15 +37,16 @@ func (lru *LRU) Set(key, val string) error {
 }
 
 func (lru *LRU) Get(key string) string {
-	val, err := lru.list.Get(key)
+	val, err := lru.List.Get(key)
 	if err != nil {
 		fmt.Println("get val error. key:", key, "error: ", err.Error())
 		return ""
 	}
 
-	err = lru.list.SetFront(key)
+	// TODO List.Get()中一次遍历，这里一次遍历，有点浪费，可以直接利用Get中返回的结果；这需要List.Get返回一个*Node类型了
+	err = lru.List.SetFront(key)
 	if err != nil {
-		fmt.Println("get val error. key:", key, "error: ", err.Error())
+		fmt.Println("set front error. key:", key, "error: ", err.Error())
 		return ""
 	}
 

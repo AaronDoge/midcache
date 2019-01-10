@@ -98,7 +98,7 @@ func (list *LinkedList) SetFront(key string) error {
 	if _, ok := preNode.Data[key]; ok {
 		return nil
 	}
-	for i := 1; i < n; i++ {
+	for i := 1; i < n + 1; i++ {
 		if _, ok := curNode.Data[key]; ok {
 			err := list.setFront(preNode, curNode)
 			if err != nil {
@@ -147,12 +147,15 @@ func (list *LinkedList) Get(key string) (string, error) {
 	}
 
 	curNode := list.Head
-	for i := 0; i < n; i++ {
+	for i := 0; i < n + 1; i++ {
 		if val, ok := curNode.Data[key]; ok {
+			//fmt.Println(">>>hit:", curNode)
 			return val, nil
 		}
 		curNode = curNode.Next
 	}
+
+	fmt.Println(">>>check 299:", curNode)
 
 	info := fmt.Sprintf("not found %s", key)
 	return "", errors.New(info)
